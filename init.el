@@ -46,6 +46,9 @@ This function should only modify configuration layer settings."
      better-defaults
      (c-c++ :variables
             c-c++-default-mode-for-headers 'c++-mode)
+     (chinese :packages youdao-dictionary fcitx
+              :variables chinese-enable-fcitx nil
+              chinese-enable-youdao-dict t)
      colors
      docker
      emacs-lisp
@@ -61,7 +64,7 @@ This function should only modify configuration layer settings."
      helm
      (ibuffer :variables ibuffer-group-buffers-by 'projects)
      latex
-     markdown
+     (markdown :variables markdown-live-preview-engine 'vmd)
      multiple-cursors
      neotree
      org
@@ -87,6 +90,7 @@ This function should only modify configuration layer settings."
    dotspacemacs-additional-packages
   '(
      google-c-style
+     cnfonts
    )
 
    ;; A list of packages that cannot be updated.
@@ -229,7 +233,7 @@ It should only modify the values of Spacemacs settings."
    ;; Default font, or prioritized list of fonts. `powerline-scale' allows to
    ;; quickly tweak the mode-line size to make separators look not too crappy.
    dotspacemacs-default-font '("Source Code Pro"
-                               :size 15
+                               :size 14
                                :weight normal
                                :width normal)
 
@@ -393,7 +397,7 @@ It should only modify the values of Spacemacs settings."
 
    ;; If non-nil, start an Emacs server if one is not already running.
    ;; (default nil)
-   dotspacemacs-enable-server nil
+   dotspacemacs-enable-server t
 
    ;; Set the emacs server socket location.
    ;; If nil, uses whatever the Emacs default is, otherwise a directory path
@@ -479,7 +483,66 @@ This function is called at the very end of Spacemacs startup, after layer
 configuration.
 Put your configuration code here, except for variables that should be set
 before packages are loaded."
-  )
+
+  ;; define the refile targets
+  (defvar org-agenda-dir "" "gtd org files location")
+  (setq-default org-agenda-dir "~/workspace/org/gtd")
+  (setq org-agenda-file-note (expand-file-name "note.org" org-agenda-dir))
+  (setq org-agenda-file-task (expand-file-name "task.org" org-agenda-dir))
+  (setq org-agenda-file-buddhism (expand-file-name "buddhism.org" org-agenda-dir))
+  (setq org-agenda-file-finished (expand-file-name "finished.org" org-agenda-dir))
+  (setq org-agenda-files (list org-agenda-dir))
+
+  (with-eval-after-load 'org-agenda
+    (define-key org-agenda-mode-map (kbd "P") 'org-pomodoro)
+    (spacemacs/set-leader-keys-for-major-mode 'org-agenda-mode
+      "." 'spacemacs/org-agenda-transient-state/body))
+
+  (setq org-todo-keywords
+        '((sequence "TODO(t!)" "DOING(i)" "WAITTING(w)" "SOMEDAY(s)" "|" "DONE(d@/!)" "ABORT(a@/!)")))
+
+  ;; the %i would copy the selected text into the template
+  ;; http://www.howardism.org/Technical/Emacs/journaling-org.html
+  ;; add multi-file journal
+  (setq org-capture-templates
+        '(
+          ("t" "Todo" entry (file+headline org-agenda-file-task "Tasks")
+           "* TODO [#B] %?\n  %i\n"
+           :empty-lines 1)
+          ("n" "Note" entry (file+headline org-agenda-file-note "Notes")
+           "* %?\n  %i\n %U"
+           :empty-lines 1)
+          ("b" "Buddhism" entry (file+headline org-agenda-file-buddhism "Buddhism")
+           "* %?\n  %i\n %U"
+           :empty-lines 1)
+          ))
+
+  ;; 添加finished和canceled两个文件路径，并且只转移到一级标题
+  (setq org-refile-targets '((org-agenda-file-finished :maxlevel . 1)
+                             (org-agenda-file-canceled :maxlevel . 1)))
+
+  ;; An entry without a cookie is treated just like priority ' B '.
+  ;; So when create new task, they are default 重要且紧急
+  (setq org-agenda-custom-commands
+        '(("w" . "任务安排")
+          ("wa" "重要且紧急的任务" tags-todo "+PRIORITY=\"A\"")
+          ("wb" "重要且不紧急的任务" tags-todo "-Weekly-Monthly-Daily+PRIORITY=\"B\"")
+          ("wc" "不重要且紧急的任务" tags-todo "+PRIORITY=\"C\"")
+          ("p" . "项目安排")
+          ("pw" tags-todo "PROJECT+WORK+CATEGORY=\"work\"")
+          ("pj" tags-todo "PROJECT+DREAM+CATEGORY=\"9sheng\"")
+          ("W" "Weekly Review"
+           ((stuck "") ;; review stuck projects as designated by org-stuck-projects
+            (tags-todo "PROJECT") ;; review all projects (assuming you use todo keywords to designate projects)
+            (tags-todo "DAILY")
+            (tags-todo "WEEKLY")))))
+
+  ;; 让 cnfonts 随着 Emacs 自动生效。
+  (cnfonts-enable)
+  ;; 让 spacemacs mode-line 中的 Unicode 图标正确显示。
+  (cnfonts-set-spacemacs-fallback-fonts)
+
+  (global-hungry-delete-mode t))
 
 (setq custom-file (expand-file-name "custom.el" dotspacemacs-directory))
 (load custom-file 'no-error 'no-message)
@@ -490,4 +553,3 @@ This is an auto-generated function, do not modify its content directly, use
 Emacs customize menu instead.
 This function is called at the very end of Spacemacs initialization."
 )
-
