@@ -89,8 +89,9 @@ This function should only modify configuration layer settings."
    ;; Also include the dependencies as they will not be resolved automatically.
    dotspacemacs-additional-packages
   '(
-     google-c-style
      cnfonts
+     google-c-style
+     htmlize
    )
 
    ;; A list of packages that cannot be updated.
@@ -408,7 +409,7 @@ It should only modify the values of Spacemacs settings."
 
    ;; If non-nil, advise quit functions to keep server open when quitting.
    ;; (default nil)
-   dotspacemacs-persistent-server nil
+   dotspacemacs-persistent-server t
 
    ;; List of search tool executable names. Spacemacs uses the first installed
    ;; tool of the list. Supported tools are `rg', `ag', `pt', `ack' and `grep'.
@@ -541,6 +542,8 @@ before packages are loaded."
   (cnfonts-enable)
   ;; 让 spacemacs mode-line 中的 Unicode 图标正确显示。
   (cnfonts-set-spacemacs-fallback-fonts)
+
+  (spacemacs/set-leader-keys "," 'pop-tag-mark)
 
   (global-hungry-delete-mode t))
 
