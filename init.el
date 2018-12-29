@@ -59,7 +59,11 @@ This function should only modify configuration layer settings."
           magit-revert-buffers 'silent
           magit-refs-show-commit-count 'all
           magit-revision-show-gravatars nil)
-     go
+     (go :variables go-tab-width 4
+         gofmt-command "goimports"
+         go-format-before-save t
+         go-use-gometalinter t
+         godoc-at-point-function 'godoc-gogetdoc)
      (gtags :disabled-for clojure emacs-lisp javascript latex python shell-scripts)
      helm
      (ibuffer :variables ibuffer-group-buffers-by 'projects)
@@ -409,7 +413,7 @@ It should only modify the values of Spacemacs settings."
 
    ;; If non-nil, advise quit functions to keep server open when quitting.
    ;; (default nil)
-   dotspacemacs-persistent-server t
+   dotspacemacs-persistent-server nil
 
    ;; List of search tool executable names. Spacemacs uses the first installed
    ;; tool of the list. Supported tools are `rg', `ag', `pt', `ack' and `grep'.
