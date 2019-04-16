@@ -45,7 +45,9 @@ This function should only modify configuration layer settings."
                       :disabled-for org markdown)
      better-defaults
      (c-c++ :variables
-            c-c++-default-mode-for-headers 'c++-mode)
+            c-c++-default-mode-for-headers 'c++-mode
+            c-c++-enable-google-style t
+            c-c++-enable-google-newline t)
      (chinese :packages youdao-dictionary fcitx
               :variables chinese-enable-fcitx nil
               chinese-enable-youdao-dict t)
@@ -60,7 +62,6 @@ This function should only modify configuration layer settings."
           magit-refs-show-commit-count 'all
           magit-revision-show-gravatars nil)
      (go :variables go-tab-width 4
-         gofmt-command "goimports"
          go-format-before-save t
          go-use-gometalinter t
          godoc-at-point-function 'godoc-gogetdoc)
@@ -547,6 +548,7 @@ before packages are loaded."
   ;; 让 spacemacs mode-line 中的 Unicode 图标正确显示。
   (cnfonts-set-spacemacs-fallback-fonts)
 
+  (spacemacs/set-leader-keys "." 'godef-jump)
   (spacemacs/set-leader-keys "," 'pop-tag-mark)
 
   (global-hungry-delete-mode t))
