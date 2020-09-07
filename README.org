@@ -1,5 +1,8 @@
 * My personal Emacs configuration
 
 ** How to use
+
+#+BEGIN_SRC sh
 git clone https://github.com/syl20bnr/spacemacs.git ~/.emacs.d
-git clone https://github.com/9sheng/spacemacs-private.git ~/.spacemacs.d 
+git clone https://github.com/9sheng/spacemacs-private.git ~/.spacemacs.d
+#+END_SRC
